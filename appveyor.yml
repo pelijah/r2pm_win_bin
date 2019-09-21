@@ -1,0 +1,16 @@
+image: Visual Studio 2017
+
+environment:
+  NINJA_URL: https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip
+  VSVARSALLPATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat'
+  PYTHON: 'C:\\Python37-x64'
+  
+install:
+  - cmd: %PYTHON%\python.exe -m pip install meson
+  - cmd: powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; wget %NINJA_URL% -OutFile ninja.zip" && unzip ninja.zip
+  - cmd: git clone git@github.com:radareorg/radare2.git
+  - cmd: call "%VSVARSALLPATH%" x64
+  - cmd: %PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist
+  
+artifacts:
+  - path: r2_dist
