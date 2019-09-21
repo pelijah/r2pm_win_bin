@@ -3,14 +3,27 @@ image: Visual Studio 2017
 environment:
   NINJA_URL: https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip
   VSVARSALLPATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat'
-  PYTHON: 'C:\\Python37-x64'
-  
+  PYTHON: 'C:\Python37-x64'
+
+cache:
+  - r2_dist
+
 install:
-  - cmd: %PYTHON%\python.exe -m pip install meson
-  - cmd: powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; wget %NINJA_URL% -OutFile ninja.zip" && unzip ninja.zip
-  - cmd: git clone git@github.com:radareorg/radare2.git
-  - cmd: call "%VSVARSALLPATH%" x64
-  - cmd: %PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist
-  
+  - '%PYTHON%\python.exe -m pip install meson'
+  - powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; wget %NINJA_URL% -OutFile ninja.zip" && unzip ninja.zip
+  - call "%VSVARSALLPATH%" x64
+  - 'git clone https://github.com/radareorg/radare2.git --single-branch --depth 1'
+  - 'git clone https://github.com/wargio/r2dec-js --single-branch --depth 1'
+
+build_script:
+  # Build radare2
+  - IF NOT EXIST r2_dist ( %PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist )
+  - set "PATH=%CD%\r2_dist\bin;%PATH%"
+  - 'radare2 -H LIBDIR'
+  - 'radare2 -H INCDIR'
+  # Build r2dec
+  - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\dist --libdir=r2dec --datadir=r2dec -Dr2_libdir=%CD%\r2_dist\lib -Dr2_incdir=%CD%\r2_dist\include r2dec-js\p build_r2dec'
+  - 'ninja -C build_r2dec install'
+
 artifacts:
-  - path: r2_dist
+  - path: dist
