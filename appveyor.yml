@@ -8,7 +8,7 @@ environment:
 install:
   - '%PYTHON%\python.exe -m pip install meson'
   - powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; wget %NINJA_URL% -OutFile ninja.zip" && unzip ninja.zip
-  - git clone git@github.com:radareorg/radare2.git
+  - git clone https://github.com/radareorg/radare2.git
   - call "%VSVARSALLPATH%" x64
   - '%PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist'
   
