@@ -19,8 +19,10 @@ build_script:
   # Build radare2
   - IF NOT EXIST r2_dist ( %PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist )
   - set "PATH=%CD%\r2_dist\bin;%PATH%"
+  - 'radare2 -H LIBDIR'
+  - 'radare2 -H INCDIR'
   # Build r2dec
-  - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\dist --libdir=r2dec --datadir=r2dec r2dec-js\p build_r2dec'
+  - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\dist --libdir=r2dec --datadir=r2dec -Dr2_libdir=%CD%\r2_dist\lib -Dr2_incdir=%CD%\r2_dist\include r2dec-js\p build_r2dec'
   - 'ninja -C build_r2dec install'
 
 artifacts:
