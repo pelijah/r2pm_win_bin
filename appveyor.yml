@@ -20,7 +20,7 @@ build_script:
   - IF NOT EXIST r2_dist ( %PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist )
   - set "PATH=%CD%\r2_dist\bin;%PATH%"
   # Build r2dec
-  - meson --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=dist --libdir=r2dec --datadir=r2dec r2dec-js\p build_r2dec install
+  - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=dist --libdir=r2dec --datadir=r2dec r2dec-js\p build_r2dec install'
 
 artifacts:
   - path: dist.zip
