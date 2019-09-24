@@ -26,4 +26,4 @@ build_script:
   - 'ninja -C build_r2dec install'
 
 artifacts:
-  - path: dist.zip
+  - path: dist
