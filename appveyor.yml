@@ -5,6 +5,7 @@ environment:
   FLEX_BISON_URL: https://github.com/lexxmark/winflexbison/releases/download/v2.5.20/win_flex_bison-2.5.20.zip
   VSVARSALLPATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat'
   PYTHON: 'C:\Python37-x64'
+  ARTIFACT: 'r2pm_win_bin'
 
 cache:
   - r2_dist
@@ -27,11 +28,11 @@ build_script:
   - ps: $env:R2_LIBDIR = "$env:APPVEYOR_BUILD_FOLDER\r2_dist\lib"
   - ps: $env:R2_INCDIR = "$env:APPVEYOR_BUILD_FOLDER\r2_dist\include"
   # Build r2dec
-  - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\dist --libdir=r2dec --datadir=r2dec -Dr2_libdir=%R2_LIBDIR% -Dr2_incdir=%R2_INCDIR% r2dec-js\p build_r2dec'
+  - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\%ARTIFACT% --libdir=r2dec --datadir=r2dec -Dr2_libdir=%R2_LIBDIR% -Dr2_incdir=%R2_INCDIR% r2dec-js\p build_r2dec'
   - 'ninja -C build_r2dec install'
   # Build r2ghidra
-  - 'cmake -G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=r2ghidra_dist -DRADARE2_INSTALL_PLUGDIR=dist\r2ghidra-dec -DCMAKE_PREFIX_PATH=%R2_LIBDIR%;%R2_INCDIR%;%APPVEYOR_BUILD_FOLDER%\win_flex_bison -B build_r2ghidra -S r2ghidra-dec'
+  - 'cmake -G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=r2ghidra_dist -DRADARE2_INSTALL_PLUGDIR=%ARTIFACT%\r2ghidra-dec -DCMAKE_PREFIX_PATH=%R2_LIBDIR%;%R2_INCDIR%;%APPVEYOR_BUILD_FOLDER%\win_flex_bison -B build_r2ghidra -S r2ghidra-dec'
   - 'ninja -C build_r2ghidra install'
 
 artifacts:
-  - path: dist
+  - path: "%ARTIFACT%"
