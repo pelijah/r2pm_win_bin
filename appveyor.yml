@@ -19,9 +19,9 @@ install:
 build_script:
   # Build radare2
   - IF NOT EXIST r2_dist ( %PYTHON%\python.exe radare2\sys\meson.py --release --shared --install=r2_dist )
-  - set "PATH=%CD%\r2_dist\bin;%PATH%"
-  - ps: $env:R2_LIBDIR = ( 'radare2 -H LIBDIR' )
-  - ps: $env:R2_INCDIR = ( 'radare2 -H INCDIR' )
+  #- set "PATH=%CD%\r2_dist\bin;%PATH%"
+  - ps: $env:R2_LIBDIR = ( r2_dist\bin\radare2.exe -H LIBDIR )
+  - ps: $env:R2_INCDIR = ( r2_dist\bin\radare2.exe -H INCDIR )
   # Build r2dec
   - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\dist --libdir=r2dec --datadir=r2dec -Dr2_libdir=%R2_LIBDIR% -Dr2_incdir=%R2_INCDIR% r2dec-js\p build_r2dec'
   - 'ninja -C build_r2dec install'
