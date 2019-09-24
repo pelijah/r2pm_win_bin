@@ -2,6 +2,7 @@ image: Visual Studio 2017
 
 environment:
   NINJA_URL: https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip
+  FLEX_BISON_URL: https://github.com/lexxmark/winflexbison/releases/download/v2.5.20/win_flex_bison-2.5.20.zip
   VSVARSALLPATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat'
   PYTHON: 'C:\Python37-x64'
 
@@ -11,6 +12,7 @@ cache:
 install:
   - '%PYTHON%\python.exe -m pip install meson'
   - powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; wget %NINJA_URL% -OutFile ninja.zip" && unzip ninja.zip
+  - powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; wget %FLEX_BISON_URL% -OutFile win_flex_bison.zip" && unzip win_flex_bison.zip -d win_flex_bison
   - call "%VSVARSALLPATH%" x64
   - 'git clone https://github.com/radareorg/radare2.git --single-branch --depth 1'
   - 'git clone https://github.com/wargio/r2dec-js --single-branch --depth 1'
@@ -28,7 +30,7 @@ build_script:
   - '%PYTHON%\Scripts\meson.exe --buildtype=release -Dc_args=-DDUK_USE_DATE_NOW_WINDOWS --prefix=%CD%\dist --libdir=r2dec --datadir=r2dec -Dr2_libdir=%R2_LIBDIR% -Dr2_incdir=%R2_INCDIR% r2dec-js\p build_r2dec'
   - 'ninja -C build_r2dec install'
   # Build r2ghidra
-  - 'C:\msys64\usr\bin\bash -lc "export PATH=\"/c/msys64/usr/bin:$PATH\" && cmake -G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=r2ghidra_dist -DRADARE2_INSTALL_PLUGDIR=dist\r2ghidra-dec -DCMAKE_PREFIX_PATH=%R2_LIBDIR%;%R2_INCDIR% -B build_r2ghidra -S r2ghidra-dec'
+  - 'cmake -G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=r2ghidra_dist -DRADARE2_INSTALL_PLUGDIR=dist\r2ghidra-dec -DCMAKE_PREFIX_PATH=%R2_LIBDIR%;%R2_INCDIR%;win_flex_bison -B build_r2ghidra -S r2ghidra-dec'
   - 'ninja -C build_r2ghidra install'
 
 artifacts:
