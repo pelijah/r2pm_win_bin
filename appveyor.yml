@@ -8,7 +8,7 @@ environment:
   ARTIFACT: 'r2pm_win_bin'
 
 cache:
-  - r2_dist
+  - r2_dist -> appveyor.yml
 
 install:
   - '%PYTHON%\python.exe -m pip install meson'
